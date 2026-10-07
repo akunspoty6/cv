@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard CMS - Kelola CV & Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+    <!-- Topbar -->
+    <header class="h-16 border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40 px-4 sm:px-8 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-sm">
+                CMS
+            </div>
+            <span class="font-bold text-white text-base">CV Content Manager</span>
+            <span class="hidden sm:inline-block text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Admin Mode</span>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="/" target="_blank" class="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition">
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                <span>Lihat Website CV</span>
+            </a>
+            <a href="/logout" class="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-semibold border border-red-500/20 transition flex items-center gap-1">
+                <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                <span>Keluar</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8 flex flex-col lg:flex-row gap-8">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-full lg:w-64 flex-shrink-0">
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-3 space-y-1 sticky top-24">
+                <button onclick="switchTab('tab-profile')" id="btn-tab-profile" class="tab-btn w-full text-left px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 transition bg-emerald-500 text-slate-950">
+                    <i data-lucide="user" class="w-4 h-4"></i>
+                    <span>Profil Utama</span>
+                </button>
+                <button onclick="switchTab('tab-skills')" id="btn-tab-skills" class="tab-btn w-full text-left px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 transition text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i data-lucide="cpu" class="w-4 h-4"></i>
+                    <span>Keahlian (Skills)</span>
+                </button>
+                <button onclick="switchTab('tab-projects')" id="btn-tab-projects" class="tab-btn w-full text-left px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 transition text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i data-lucide="folder-git-2" class="w-4 h-4"></i>
+                    <span>Portfolio Proyek</span>
+                </button>
+                <button onclick="switchTab('tab-experiences')" id="btn-tab-experiences" class="tab-btn w-full text-left px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 transition text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i data-lucide="briefcase" class="w-4 h-4"></i>
+                    <span>Riwayat Pengalaman</span>
+                </button>
+                <button onclick="switchTab('tab-education')" id="btn-tab-education" class="tab-btn w-full text-left px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 transition text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                    <span>Pendidikan</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="flex-1">
+
+            <!-- Toast Alert -->
+            <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-sm font-semibold border transition duration-300"></div>
+
+            <!-- ================= TAB 1: PROFIL ================= -->
+            <section id="tab-profile" class="tab-content">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Edit Informasi Profil</h2>
+                            <p class="text-slate-400 text-xs sm:text-sm mt-0.5">Atur nama, bio, jabatan, dan kontak personal Anda</p>
+                        </div>
+                        <button onclick="saveProfile()" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm rounded-xl transition flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+                            <i data-lucide="save" class="w-4 h-4"></i>
+                            <span>Simpan Perubahan</span>
+                        </button>
+                    </div>
+
+                    <form id="form-profile" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Nama Lengkap</label>
+                            <input type="text" id="prof-full_name" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Jabatan / Role</label>
+                            <input type="text" id="prof-title" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Tagline Singkat</label>
+                            <input type="text" id="prof-tagline" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Biografi Lengkap</label>
+                            <textarea id="prof-bio" rows="4" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Alamat Email</label>
+                            <input type="email" id="prof-email" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Nomor WhatsApp / HP</label>
+                            <input type="text" id="prof-phone" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Domisili / Lokasi</label>
+                            <input type="text" id="prof-location" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Link Profil GitHub</label>
+                            <input type="url" id="prof-github" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">URL Foto Profil / Avatar</label>
+                            <input type="url" id="prof-avatar_url" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ================= TAB 2: SKILLS ================= -->
+            <section id="tab-skills" class="tab-content hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Kelola Keahlian (Skills)</h2>
+                            <p class="text-slate-400 text-xs sm:text-sm mt-0.5">Tambah dan modifikasi daftar kompetensi teknis</p>
+                        </div>
+                        <button onclick="openSkillModal()" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm rounded-xl transition flex items-center gap-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Tambah Skill</span>
+                        </button>
+                    </div>
+
+                    <div id="skills-list" class="space-y-3">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= TAB 3: PROJECTS ================= -->
+            <section id="tab-projects" class="tab-content hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Kelola Portfolio Proyek</h2>
+                            <p class="text-slate-400 text-xs sm:text-sm mt-0.5">Pamerkan proyek AI, IoT, dan aplikasi yang sudah dibangun</p>
+                        </div>
+                        <button onclick="openProjectModal()" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm rounded-xl transition flex items-center gap-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Tambah Proyek</span>
+                        </button>
+                    </div>
+
+                    <div id="projects-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= TAB 4: EXPERIENCES ================= -->
+            <section id="tab-experiences" class="tab-content hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Kelola Riwayat Pengalaman</h2>
+                            <p class="text-slate-400 text-xs sm:text-sm mt-0.5">Daftar pengalaman kerja, riset, maupun kepemimpinan tim</p>
+                        </div>
+                        <button onclick="openExpModal()" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm rounded-xl transition flex items-center gap-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Tambah Pengalaman</span>
+                        </button>
+                    </div>
+
+                    <div id="exp-list" class="space-y-4">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= TAB 5: EDUCATION ================= -->
+            <section id="tab-education" class="tab-content hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Kelola Latar Belakang Pendidikan</h2>
+                            <p class="text-slate-400 text-xs sm:text-sm mt-0.5">Institusi dan jenjang studi akademik</p>
+                        </div>
+                        <button onclick="openEduModal()" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm rounded-xl transition flex items-center gap-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Tambah Pendidikan</span>
+                        </button>
+                    </div>
+
+                    <div id="edu-list" class="space-y-4">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ================= MODAL GENERIC ================= -->
+    <div id="modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg p-6 sm:p-8 shadow-2xl relative">
+            <h3 id="modal-title" class="text-lg font-bold text-white mb-4">Judul Modal</h3>
+            <div id="modal-body" class="space-y-4"></div>
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-800">
+                <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs sm:text-sm font-semibold transition">Batal</button>
+                <button id="modal-save-btn" class="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs sm:text-sm font-bold transition">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Logic -->
+    <script>
+        function showToast(msg, type='success') {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.className = `fixed bottom-6 right-6 z-50 px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-sm font-semibold border transition duration-300 ${
+                type === 'success' ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : 'bg-red-500/20 border-red-500/40 text-red-400'
+            }`;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.className = "tab-btn w-full text-left px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 transition text-slate-400 hover:text-white hover:bg-slate-800";
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            const btn = document.getElementById('btn-' + tabId);
+            btn.className = "tab-btn w-full text-left px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 transition bg-emerald-500 text-slate-950";
+            lucide.createIcons();
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        // --- 1. PROFILE API ---
+        async function loadProfile() {
+            const res = await fetch('/api/profile');
+            const data = await res.json();
+            for (let k in data) {
+                const el = document.getElementById('prof-' + k);
+                if (el) el.value = data[k] || '';
+            }
+        }
+
+        async function saveProfile() {
+            const payload = {};
+            const keys = ['full_name', 'title', 'tagline', 'bio', 'email', 'phone', 'location', 'github', 'linkedin', 'avatar_url'];
+            keys.forEach(k => {
+                const el = document.getElementById('prof-' + k);
+                if (el) payload[k] = el.value;
+            });
+
+            const res = await fetch('/api/profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.success) showToast('Profil berhasil diperbarui!');
+        }
+
+        // --- 2. SKILLS API ---
+        async function loadSkills() {
+            const res = await fetch('/api/skills');
+            const items = await res.json();
+            const container = document.getElementById('skills-list');
+            container.innerHTML = '';
+            items.forEach(s => {
+                container.innerHTML += `
+                    <div class="flex items-center justify-between p-3.5 bg-slate-800/60 rounded-xl border border-slate-700/60">
+                        <div>
+                            <div class="font-bold text-white text-sm">${s.name}</div>
+                            <div class="text-xs text-slate-400">${s.category} • Kemahiran: ${s.level}%</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick='editSkill(${JSON.stringify(s)})' class="p-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                            <button onclick="deleteItem('skills', ${s.id})" class="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function openSkillModal(skill = null) {
+            document.getElementById('modal-title').innerText = skill ? 'Edit Skill' : 'Tambah Skill Baru';
+            document.getElementById('modal-body').innerHTML = `
+                <input type="hidden" id="skill-id" value="${skill ? skill.id : ''}">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Nama Skill</label>
+                    <input type="text" id="skill-name" value="${skill ? skill.name : ''}" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Kategori</label>
+                    <input type="text" id="skill-category" value="${skill ? skill.category : 'AI & Machine Learning'}" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Tingkat Kemahiran (%)</label>
+                    <input type="number" id="skill-level" value="${skill ? skill.level : 85}" min="10" max="100" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">
+                </div>
+            `;
+            document.getElementById('modal-save-btn').onclick = async () => {
+                const payload = {
+                    id: document.getElementById('skill-id').value || undefined,
+                    name: document.getElementById('skill-name').value,
+                    category: document.getElementById('skill-category').value,
+                    level: parseInt(document.getElementById('skill-level').value)
+                };
+                await fetch('/api/skills', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                closeModal();
+                showToast('Skill berhasil disimpan!');
+                loadSkills();
+            };
+            document.getElementById('modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function editSkill(skill) {
+            openSkillModal(skill);
+        }
+
+        // --- 3. PROJECTS API ---
+        async function loadProjects() {
+            const res = await fetch('/api/projects');
+            const items = await res.json();
+            const container = document.getElementById('projects-list');
+            container.innerHTML = '';
+            items.forEach(p => {
+                container.innerHTML += `
+                    <div class="bg-slate-800/60 rounded-xl border border-slate-700/60 p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="text-xs font-semibold text-emerald-400 mb-1">${p.category}</div>
+                            <h4 class="font-bold text-white text-sm mb-1">${p.title}</h4>
+                            <p class="text-xs text-slate-400 line-clamp-2 mb-3">${p.description}</p>
+                        </div>
+                        <div class="flex justify-end gap-2 pt-3 border-t border-slate-700/60">
+                            <button onclick='editProject(${JSON.stringify(p)})' class="p-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                            <button onclick="deleteItem('projects', ${p.id})" class="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function openProjectModal(p = null) {
+            document.getElementById('modal-title').innerText = p ? 'Edit Proyek' : 'Tambah Proyek Baru';
+            document.getElementById('modal-body').innerHTML = `
+                <input type="hidden" id="p-id" value="${p ? p.id : ''}">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Judul Proyek</label>
+                    <input type="text" id="p-title" value="${p ? p.title : ''}" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Kategori</label>
+                    <input type="text" id="p-category" value="${p ? p.category : 'AI & IoT'}" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Deskripsi</label>
+                    <textarea id="p-desc" rows="3" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">${p ? p.description : ''}</textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Tags (Pisahkan dengan koma)</label>
+                    <input type="text" id="p-tags" value="${p ? p.tags : 'Python, YOLOv8'}" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">URL Gambar Thumbnail</label>
+                    <input type="text" id="p-img" value="${p ? p.image_url : ''}" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Link GitHub</label>
+                        <input type="text" id="p-github" value="${p ? p.link_github : ''}" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Link Demo</label>
+                        <input type="text" id="p-demo" value="${p ? p.link_demo : '#'}" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">
+                    </div>
+                </div>
+            `;
+            document.getElementById('modal-save-btn').onclick = async () => {
+                const payload = {
+                    id: document.getElementById('p-id').value || undefined,
+                    title: document.getElementById('p-title').value,
+                    category: document.getElementById('p-category').value,
+                    description: document.getElementById('p-desc').value,
+                    tags: document.getElementById('p-tags').value,
+                    image_url: document.getElementById('p-img').value,
+                    link_github: document.getElementById('p-github').value,
+                    link_demo: document.getElementById('p-demo').value
+                };
+                await fetch('/api/projects', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                closeModal();
+                showToast('Proyek berhasil disimpan!');
+                loadProjects();
+            };
+            document.getElementById('modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function editProject(p) {
+            openProjectModal(p);
+        }
+
+        // --- 4. EXPERIENCES API ---
+        async function loadExperiences() {
+            const res = await fetch('/api/experiences');
+            const items = await res.json();
+            const container = document.getElementById('exp-list');
+            container.innerHTML = '';
+            items.forEach(e => {
+                container.innerHTML += `
+                    <div class="p-4 bg-slate-800/60 rounded-xl border border-slate-700/60 flex items-start justify-between">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-bold text-white text-sm">${e.role}</h4>
+                                <span class="text-xs text-emerald-400 font-semibold">• ${e.company}</span>
+                            </div>
+                            <div class="text-xs text-slate-400 my-1">${e.period}</div>
+                            <p class="text-xs text-slate-300 leading-relaxed">${e.description}</p>
+                        </div>
+                        <div class="flex gap-2 flex-shrink-0 ml-4">
+                            <button onclick='editExp(${JSON.stringify(e)})' class="p-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                            <button onclick="deleteItem('experiences', ${e.id})" class="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function openExpModal(e = null) {
+            document.getElementById('modal-title').innerText = e ? 'Edit Pengalaman' : 'Tambah Pengalaman Baru';
+            document.getElementById('modal-body').innerHTML = `
+                <input type="hidden" id="exp-id" value="${e ? e.id : ''}">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Posisi / Peran</label>
+                    <input type="text" id="exp-role" value="${e ? e.role : ''}" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Instansi / Organisasi / Proyek</label>
+                    <input type="text" id="exp-company" value="${e ? e.company : ''}" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Periode</label>
+                    <input type="text" id="exp-period" value="${e ? e.period : '2025 - Sekarang'}" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Deskripsi Tugas</label>
+                    <textarea id="exp-desc" rows="3" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">${e ? e.description : ''}</textarea>
+                </div>
+            `;
+            document.getElementById('modal-save-btn').onclick = async () => {
+                const payload = {
+                    id: document.getElementById('exp-id').value || undefined,
+                    role: document.getElementById('exp-role').value,
+                    company: document.getElementById('exp-company').value,
+                    period: document.getElementById('exp-period').value,
+                    description: document.getElementById('exp-desc').value
+                };
+                await fetch('/api/experiences', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                closeModal();
+                showToast('Pengalaman berhasil disimpan!');
+                loadExperiences();
+            };
+            document.getElementById('modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function editExp(e) {
+            openExpModal(e);
+        }
+
+        // --- 5. EDUCATION API ---
+        async function loadEducation() {
+            const res = await fetch('/api/education');
+            const items = await res.json();
+            const container = document.getElementById('edu-list');
+            container.innerHTML = '';
+            items.forEach(ed => {
+                container.innerHTML += `
+                    <div class="p-4 bg-slate-800/60 rounded-xl border border-slate-700/60 flex items-start justify-between">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-bold text-white text-sm">${ed.institution}</h4>
+                                <span class="text-xs text-teal-400 font-semibold">• ${ed.degree}</span>
+                            </div>
+                            <div class="text-xs text-slate-400 my-1">${ed.period}</div>
+                            <p class="text-xs text-slate-300 leading-relaxed">${ed.description}</p>
+                        </div>
+                        <div class="flex gap-2 flex-shrink-0 ml-4">
+                            <button onclick='editEdu(${JSON.stringify(ed)})' class="p-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                            <button onclick="deleteItem('education', ${ed.id})" class="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function openEduModal(ed = null) {
+            document.getElementById('modal-title').innerText = ed ? 'Edit Pendidikan' : 'Tambah Pendidikan Baru';
+            document.getElementById('modal-body').innerHTML = `
+                <input type="hidden" id="edu-id" value="${ed ? ed.id : ''}">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Nama Institusi / Kampus</label>
+                    <input type="text" id="edu-inst" value="${ed ? ed.institution : ''}" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Jurusan / Program Studi</label>
+                    <input type="text" id="edu-degree" value="${ed ? ed.degree : ''}" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Periode</label>
+                    <input type="text" id="edu-period" value="${ed ? ed.period : '2023 - Sekarang'}" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Deskripsi / Keterangan</label>
+                    <textarea id="edu-desc" rows="3" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm">${ed ? ed.description : ''}</textarea>
+                </div>
+            `;
+            document.getElementById('modal-save-btn').onclick = async () => {
+                const payload = {
+                    id: document.getElementById('edu-id').value || undefined,
+                    institution: document.getElementById('edu-inst').value,
+                    degree: document.getElementById('edu-degree').value,
+                    period: document.getElementById('edu-period').value,
+                    description: document.getElementById('edu-desc').value
+                };
+                await fetch('/api/education', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                closeModal();
+                showToast('Pendidikan berhasil disimpan!');
+                loadEducation();
+            };
+            document.getElementById('modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function editEdu(ed) {
+            openEduModal(ed);
+        }
+
+        // --- GLOBAL DELETE ---
+        async function deleteItem(table, id) {
+            if (!confirm('Yakin ingin menghapus data ini?')) return;
+            await fetch(`/api/${table}`, {
+                method: 'DELETE',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({id: id})
+            });
+            showToast('Data berhasil dihapus');
+            if (table === 'skills') loadSkills();
+            if (table === 'projects') loadProjects();
+            if (table === 'experiences') loadExperiences();
+            if (table === 'education') loadEducation();
+        }
+
+        // Init Loads
+        window.addEventListener('DOMContentLoaded', () => {
+            loadProfile();
+            loadSkills();
+            loadProjects();
+            loadExperiences();
+            loadEducation();
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
