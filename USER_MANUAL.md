@@ -1,86 +1,65 @@
-# 📘 User Manual: Web CV & CMS (Smart Portfolio)
+# 📘 User Manual: Web CV & CMS (Dark Mode Linear Design)
 
-Halo Bang Rafi! Ini adalah panduan lengkap buat lu (atau temen lu) untuk ngejalanin, ngedit konten, sampe nge-push website CV & Portfolio canggih ini ke GitHub.
+Halo Bang Rafi! Ini adalah panduan lengkap untuk ngejalanin, ngedit konten, dan ngerawat website CV & Portfolio lu.
 
-Website ini dibikin spesial pake **Python (Flask)**, **SQLite** (database ringan & cepet), dan **Tailwind CSS** (buat tampilan ala hacker / startup yang *sleek* & modern).
+Website ini dibikin spesial pake **Python (Flask)**, **SQLite** (database ringan & cepet), dan UI **Dark Mode Native ala Linear** (bukan AI Slop).
 
 ---
 
-## 🚀 1. Cara Menjalankan Website di VPS
-Kalo webnya belum nyala, lu bisa nyalain pake perintah ini di terminal:
+## 🚀 1. Cara Menjalankan Website (Lokal/VPS)
+Kalo lu mau jalanin ulang webnya di komputer lu sendiri atau di VPS lain:
 
 ```bash
-# Pindah ke folder project
-cd /root/web-cv-cms
+# Buka terminal dan clone repo ini
+git clone https://github.com/akunspoty6/cv.git
+cd cv
 
-# Aktifin environment Python
+# Bikin environment Python dan aktifkan
+python3 -m venv venv
 source venv/bin/activate
 
-# Jalankan servernya di background (port 8080)
-nohup python3 app.py > flask.log 2>&1 &
-```
+# Install library yang dibutuhin
+pip install -r requirements.txt
 
-Kalau udah jalan, lu bisa akses webnya dari browser di:
-👉 **http://103.147.33.12:8080**
+# Jalankan servernya
+python3 app.py
+```
+Web bakal jalan di port 8080 (buka `http://127.0.0.1:8080` di browser).
 
 ---
 
 ## 🔐 2. Cara Masuk ke CMS Admin (Buat Edit Data)
-Kalo lu mau ngedit nama, nambahin skill, nambah pengalaman kerja, atau nambahin link repo GitHub baru, lu **kaga usah ngedit kodingan**. Tinggal masuk ke Admin Panel aja!
+Kalo lu mau ngedit nama, nambahin skill, proyek, atau pengalaman kerja, **kaga usah ngedit kodingan sama sekali**.
 
-1. Buka browser: **http://103.147.33.12:8080/login**
-2. Masukin kredensial bawaan:
+1. Buka browser: `http://localhost:8080/login`
+2. Masukin kredensial:
    * **Username:** `admin`
    * **Password:** `admin123`
-3. Begitu masuk, lu bakal ngeliat Dashboard CMS.
+3. Masuk ke Dashboard CMS!
 
 ---
 
-## 📝 3. Cara Ngedit Konten dari Dashboard CMS
-Di dalem dashboard sebelah kiri, ada menu tab. Lu tinggal klik mau ngedit apa:
+## 📝 3. Cara Ngedit Konten dari Dashboard
+Di panel kiri, klik tab menu yang mau diubah:
+1. **Profil Utama:** Ganti Nama, Bio, Nomor WA, Link LinkedIn, sampe URL Foto Profil (Cari foto di internet, copy *Image Address*, paste). Jangan lupa klik "Simpan"!
+2. **Keahlian (Skills):** Klik "+ Tambah Skill", masukin kategori (contoh: *Machine Learning*), nama skill, dan persentase.
+3. **Portfolio Proyek:** Klik "+ Tambah Proyek". Masukin judul, tag (koma-pisahkan), link repo GitHub, link demo, dan link gambar thumbnail proyek lu.
+4. **Riwayat Pengalaman & Pendidikan:** Tinggal klik tambah, masukin info tahun dan deskripsi.
 
-1. **Profil Utama:** 
-   Buat ganti Nama Lu, Bio, Jabatan, Nomor WA, Link LinkedIn, sampe URL Foto Profil (Cari foto di internet, copy *Image Address*-nya, paste ke situ).
-   *Jangan lupa klik "Simpan Perubahan"!*
-2. **Keahlian (Skills):** 
-   Klik tombol **"+ Tambah Skill"**, masukin kategori (contoh: *AI & Machine Learning*), nama skill (contoh: *YOLOv8*), dan tingkat persentase kemahiran (10 - 100).
-3. **Portfolio Proyek:**
-   Klik **"+ Tambah Proyek"**. Di sini lu bisa masukin:
-   - Judul proyek lu (contoh: *SmartAgro Deteksi Penyakit*)
-   - Deskripsi singkat
-   - Tags (contoh: *Python, YOLOv8, Flask*)
-   - Link Demo atau Link Repository GitHub lu
-   - URL Gambar Thumbnail proyek (Biar keren pas di-showcase).
-4. **Riwayat Pengalaman & Pendidikan:**
-   Tinggal klik Tambah, masukin periode tahun, dan klik Simpan. Gampang banget!
-
-*Note:* Setiap kali lu klik Simpan, datanya langsung **OTOMATIS** berubah di halaman depan website! Lu bisa klik tombol **"Lihat Website CV"** di pojok kanan atas buat ngecek hasilnya.
+*Semua data kesimpen di file `cv.db`. File database ini ikut ke-push ke GitHub lu.*
 
 ---
 
-## 🌐 4. Cara Upload (Push) Kodingan ke GitHub
-Kalo lu ngerasa website ini udah danta dan mau lu pamerin atau lu simpen di repository GitHub lu secara permanen, jalankan perintah ini di VPS:
-
-```bash
-cd /root/web-cv-cms
-
-# Inisialisasi Git
-git init
-
-# Tambahkan file yang mau diupload (kecuali folder venv)
-echo "venv/" > .gitignore
-echo "__pycache__/" >> .gitignore
-echo "flask.log" >> .gitignore
-
-git add .
-git commit -m "Initial commit: Web CV & CMS by Hermes"
-
-# Bikin repository baru di GitHub (pake gh CLI)
-gh repo create web-cv-cms --public --source=. --remote=origin --push
-```
-*Note: Pas `gh repo create` dijalanin, otomatis repository bakal kebuat di akun GitHub `akunspoty6` lu!*
+## ☁️ 4. Deploy (Rekomendasi Hosting Gratis)
+Karena kodingan ini udah rapi pake Python Flask, lu bisa hosting **GRATIS** selamanya pake **Render.com** atau **PythonAnywhere**.
+Caranya di Render:
+1. Buka [render.com](https://render.com) dan login pake akun GitHub `akunspoty6`.
+2. Bikin *New Web Service*, pilih repo `cv`.
+3. Build command: `pip install -r requirements.txt`
+4. Start command: `gunicorn app:app --bind 0.0.0.0:$PORT` (jangan lupa tambahin `gunicorn` di `requirements.txt`).
+5. Selesai! Web CV lu online 24 jam gratis.
 
 ---
 
 🎉 **Selesai!** 
-Website CV lu udah online, ada CMS-nya, tampilannya kece badai, dan gampang banget di-manage! Kalo ada error atau mau nambah fitur, tinggal panggil *Wowo* aja! 🫡
+Website lu udah nangkring rapi di GitHub `https://github.com/akunspoty6/cv`. Gampang banget di-manage! Kalo ada error, tinggal calling Wowo! 🫡
